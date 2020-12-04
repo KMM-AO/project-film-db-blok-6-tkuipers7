@@ -11,7 +11,7 @@ class moviecontroller extends Controller
     public function getMovieInfo_json($movie_id)
     {
         $movie = new Movie();
-        $movie->setId($movie_id);
+        $movie->setPK($movie_id);
         $movie->load($success);
         if ($success)
         {

@@ -22,11 +22,6 @@ class People extends Model
         parent::__construct(['tmdb_person_id',PDO::PARAM_INT]);
     }
 
-    public function setPK($pk_value)
-    {
-        $this->setDataField($this->primary_name,$pk_value);
-    }
-
     /**
      * API FUNCTIONS
      */
@@ -80,7 +75,7 @@ class People extends Model
             '
             SELECT ' . self::TABLENAME . '.tmdb_person_id as id, ' . self::TABLENAME . '.name
             FROM ' . self::TABLENAME . '
-            JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
+            JOIN movie_person AS mp ON ' . self::TABLENAME . '.tmdb_person_id = mp.id_person
             WHERE mp.role = "actor"
         ';
         $statement = $pdo->prepare($query);
@@ -96,27 +91,32 @@ class People extends Model
         return $objects;
     }
 
-    static public function indexActorsByMovie($id_movie)
+    static public function indexActorsByMovie(Movie $movie)
     {
         $pdo = Database::getInstance()->getPdo();
         $query =
             '
-            SELECT people.name, mp.character_name
+            SELECT ' . self::TABLENAME . '.name, mp.character_name
             FROM ' . self::TABLENAME . '
-            JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
+            JOIN movie_person AS mp ON ' . self::TABLENAME . '.tmdb_person_id = mp.id_person
             WHERE mp.id_movie = :id_movie && mp.role = "actor"
         ';
         $statement = $pdo->prepare($query);
-        $statement->bindValue('id_movie',$id_movie,PDO::PARAM_INT);
+        $statement->bindValue('id_movie',$movie->getPrimaryValue(),$movie->primary_type);
         $ok = $statement->execute();
-        $records =  $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $objects = [];
-        foreach ($records as $record)
+        if ($ok)
         {
-            $object = new self();
-            $object->setData($record);
-            $objects[] = $object;
+            $records =  $statement->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($records as $record)
+            {
+                $object = new self();
+                $object->setData($record);
+                $objects[] = $object;
+            }
         }
+
         return $objects;
     }
 }

@@ -134,9 +134,9 @@ class Router
         if (!$this->matchRequest())
         {
             header("HTTP/1.0 404 Not Found");
-            $view = new View();
-            $view->setTemplate('404');
-            $view->render();
+            $json = new Json();
+            $json->setStatus('404','Invalid Request');
+            $json->render();
         }
         else
         {

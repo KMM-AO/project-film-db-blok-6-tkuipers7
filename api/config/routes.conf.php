@@ -5,7 +5,7 @@ use core\Route;
 $this->allowed_routes = 
 [
      new Route(
-         'getmovies',
+         'movie',
          'GET',
          'moviecontroller',
          'index_json'
@@ -17,15 +17,16 @@ $this->allowed_routes =
         'getMovieInfo_json'
     ),
     new Route(
-        'getactors',
-        'GET',
-        'peoplecontroller',
-        'index_json'
-    ),
-    new Route(
         'person/([1-9][0-9]*)',
         'GET',
         'peoplecontroller',
         'getPersonInfo_json'
-    )
+    ),
+    new Route(
+        'person/actors',
+        'GET',
+        'peoplecontroller',
+        'index_json'
+    ),
+
 ];

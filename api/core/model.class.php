@@ -86,6 +86,10 @@ abstract class Model {
     {
         $this->data[$name] = $value;
     }
+    public function setPK($pk_value)
+    {
+        $this->setDataField($this->primary_name,$pk_value);
+    }
     
     /** 
      * validatie-errors
