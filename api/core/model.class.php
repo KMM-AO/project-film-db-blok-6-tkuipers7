@@ -15,9 +15,9 @@ abstract class Model {
 
     private $data;          /** de associatieve array met record-gegevens van het object */
     
-    private $primary_name;  /** de naam van het primary-key-veld */
+    protected $primary_name;  /** de naam van het primary-key-veld */
     
-    private $primary_type;  /** het pdo-param-type van het primary-key-veld */
+    protected $primary_type;  /** het pdo-param-type van het primary-key-veld */
     
     private $errors;        /** de associatieve array met validatie-errors */
     
@@ -159,15 +159,15 @@ abstract class Model {
      * 
      * Deze method retourneert een array met alle objecten van de aanvragende child class.
      */
-    static public function index() 
+    static public function index($select = '*')
     {
         $pdo = Database::getInstance()->getPdo();           /** database-connectie */
         
-        $class = get_called_class();                        /** één van de child classes */
+        $class = get_called_class();                        /** ï¿½ï¿½n van de child classes */
 
         $query =                                            /** haal alle records op */
         '
-            SELECT *
+            SELECT ' . $select . '
             FROM ' . $class::TABLENAME . '
         ';
         
