@@ -1,21 +1,22 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import home from '../components/Home.vue'
-import show_movie from "../components/ShowMovie";
+import { createRouter, createWebHistory } from 'vue-router'
 
-Vue.use(Router);
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: () => import('@/views/Home.vue')
+  },
+  {
+    path: '/movie/:id',
+    name: 'movie',
+    component: () => import('@/views/ShowMovie.vue')
+  }
+]
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: home
-    },
-    {
-      path: '/movie/:id',
-      name: 'movie',
-      component: show_movie
-    }
-  ]
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
 })
+
+
+export default router
