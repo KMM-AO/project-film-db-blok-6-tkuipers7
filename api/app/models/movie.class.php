@@ -35,10 +35,10 @@ class movie extends model
         $query =
             '
                 SELECT tmdb_id, original_title, poster_path
-                FROM ' . self::TABLENAME . '
+                FROM movies
                 JOIN movie_person ON movie_person.id_movie = movies.tmdb_id
-                JOIN ' . $person::TABLENAME . ' ON ' . $person::TABLENAME . '.' . $person->primary_name . ' = movie_person.id_person
-                WHERE ' . $person::TABLENAME . '.' . $person->primary_name . ' = :person_pk
+                JOIN people ON people.tmdb_person_id = movie_person.id_person
+                WHERE people tmdb_person_id = :person_pk
         ';
 
         $statement = $pdo->prepare($query);

@@ -23,7 +23,7 @@ class Genre extends Model
         $query =
             '
             SELECT name
-            FROM ' . self::TABLENAME . '
+            FROM genres
             JOIN movie_genre ON tmdb_genre_id = id_genre
             WHERE id_movie = :movie_id
         ';

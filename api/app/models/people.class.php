@@ -38,9 +38,9 @@ class People extends Model
             $query =
                 '
             SELECT genders.name
-            FROM ' . self::TABLENAME . '
+            FROM people
             JOIN genders ON genders.id = gender_id
-            WHERE ' . $this->primary_name . ' = :pk
+            WHERE tmdb_person_id = :pk
         ';
 
             $statement = $pdo->prepare($query);
@@ -73,9 +73,9 @@ class People extends Model
         $pdo = Database::getInstance()->getPdo();
         $query =
             '
-            SELECT ' . self::TABLENAME . '.tmdb_person_id as id, ' . self::TABLENAME . '.name
-            FROM ' . self::TABLENAME . '
-            JOIN movie_person AS mp ON ' . self::TABLENAME . '.tmdb_person_id = mp.id_person
+            SELECT people.tmdb_person_id as id, people.name
+            FROM people
+            JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
             WHERE mp.role = "actor"
         ';
         $statement = $pdo->prepare($query);
@@ -96,9 +96,9 @@ class People extends Model
         $pdo = Database::getInstance()->getPdo();
         $query =
             '
-            SELECT ' . self::TABLENAME . '.name, mp.character_name
-            FROM ' . self::TABLENAME . '
-            JOIN movie_person AS mp ON ' . self::TABLENAME . '.tmdb_person_id = mp.id_person
+            SELECT people.name, mp.character_name
+            FROM people
+            JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
             WHERE mp.id_movie = :id_movie && mp.role = "actor"
         ';
         $statement = $pdo->prepare($query);
