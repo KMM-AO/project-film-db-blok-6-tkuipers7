@@ -38,7 +38,7 @@ class movie extends model
                 FROM movies
                 JOIN movie_person ON movie_person.id_movie = movies.tmdb_id
                 JOIN people ON people.tmdb_person_id = movie_person.id_person
-                WHERE people tmdb_person_id = :person_pk
+                WHERE people.tmdb_person_id = :person_pk
         ';
 
         $statement = $pdo->prepare($query);

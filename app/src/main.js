@@ -5,7 +5,7 @@ import store from './store'
 
 createApp(App).use(store).use(router).mount('#app')
 
-fetch( store.getters.getApiPath+'getmovies')
+fetch( store.getters.getApiPath+'movie')
     .then((res) => res.json())
     .then((data) => {
         console.log(data);

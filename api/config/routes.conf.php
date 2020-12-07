@@ -17,16 +17,17 @@ $this->allowed_routes =
         'getMovieInfo_json'
     ),
     new Route(
+        'person',
+        'GET',
+        'peoplecontroller',
+        'index_json'
+    ),
+    new Route(
         'person/([1-9][0-9]*)',
         'GET',
         'peoplecontroller',
         'getPersonInfo_json'
     ),
-    new Route(
-        'person/actors',
-        'GET',
-        'peoplecontroller',
-        'index_json'
-    ),
+
 
 ];

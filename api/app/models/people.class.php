@@ -73,7 +73,7 @@ class People extends Model
         $pdo = Database::getInstance()->getPdo();
         $query =
             '
-            SELECT people.tmdb_person_id as id, people.name
+            SELECT people.tmdb_person_id as id, people.name, mp.role
             FROM people
             JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
             WHERE mp.role = "actor"

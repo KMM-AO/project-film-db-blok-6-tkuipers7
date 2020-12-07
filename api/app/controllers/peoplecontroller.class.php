@@ -34,11 +34,7 @@ class peoplecontroller extends Controller
     {
         $actors = People::indexActors();
 
-        if (!isset($actors))
-        {
-            $this->json->setStatus(404, 'Not Found');
-        }
-        else
+        if (isset($actors))
         {
             $data = [];
             foreach ($actors as $actor)
