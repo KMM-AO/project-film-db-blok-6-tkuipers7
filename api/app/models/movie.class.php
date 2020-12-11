@@ -36,9 +36,8 @@ class movie extends model
             '
                 SELECT tmdb_id, original_title, poster_path
                 FROM movies
-                JOIN movie_person ON movie_person.id_movie = movies.tmdb_id
-                JOIN people ON people.tmdb_person_id = movie_person.id_person
-                WHERE people.tmdb_person_id = :person_pk
+                JOIN movie_person ON id_movie = tmdb_id
+                WHERE id_person = :person_pk
         ';
 
         $statement = $pdo->prepare($query);
