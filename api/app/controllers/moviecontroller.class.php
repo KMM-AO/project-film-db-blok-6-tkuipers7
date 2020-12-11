@@ -39,19 +39,15 @@ class moviecontroller extends Controller
     {
         $movies = Movie::index('tmdb_id as id,original_title, poster_path');
 
-        if (!isset($movies))
+        $data = [];
+        if (count($movies) > 0)
         {
-            $this->json->setStatus(404, 'Not Found');
-        }
-        else
-        {
-            $data = [];
             foreach ($movies as $movie)
             {
                 $data[] = $movie->GetData();
             }
-            $this->json->add('movies', $data);
         }
+        $this->json->add('movies', $data);
         $this->json->render();
     }
 }
