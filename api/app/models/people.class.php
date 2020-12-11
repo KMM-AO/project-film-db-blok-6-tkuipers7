@@ -34,7 +34,6 @@ class People extends Model
     {
         if (!isset($this->gender))
         {
-            $pdo = Database::getInstance()->getPdo();
             $query =
                 '
             SELECT genders.name
@@ -43,7 +42,7 @@ class People extends Model
             WHERE tmdb_person_id = :pk
         ';
 
-            $statement = $pdo->prepare($query);
+            $statement = $this->pdo->prepare($query);
             $pk_name = $this->primary_name;
             $statement->bindValue(':pk',$this->$pk_name,$this->primary_type);
             $ok = $statement->execute();
