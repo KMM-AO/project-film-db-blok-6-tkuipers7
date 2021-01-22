@@ -8,6 +8,8 @@ use PDO;
 class People extends Model
 {
     const TABLENAME = 'people';
+    const PRIMARY_NAME = 'tmdb_person_id';
+    const PRIMARY_TYPE = PDO::PARAM_INT;
 
     private $associated_movies;
     private $gender;
@@ -19,16 +21,50 @@ class People extends Model
          * primary-key-definitie als een array met twee elementen [naam, pdo-paramtype]
          *   default is ['id', PDO::PARAM_INT]
          */
-        parent::__construct(['tmdb_person_id',PDO::PARAM_INT]);
+        parent::__construct([self::PRIMARY_NAME, self::PRIMARY_TYPE]);
     }
 
     /**
      * API FUNCTIONS
+     * @param string $select
+     * @param null $limit
+     * @return array
      */
 
 //    JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
 //    JOIN genders ON genders.id = people.gender_id
 //    WHERE mp.id_movie = :id_movie && mp.role = "actor"
+    static public function index($select = '*', $limit = null) {
+        $pdo = Database::getInstance()->getPdo();
+
+        $query =                                            /** haal alle records op */
+            '
+        SELECT ' . $select . '
+        FROM ' . self::TABLENAME . '
+        JOIN genders ON genders.id = gender_id
+        ORDER BY id
+        ';
+
+        if ($limit !== null)
+        {
+            $query .= 'LIMIT ' . $limit;
+        }
+
+        $statement = $pdo->prepare($query);                 /** query uitvoeren */
+        $statement->execute();
+
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);  /** records ophalen als assoc. arrays */
+        $objects = [];                                      /** records moeten model-objects worden */
+
+        foreach ($records as $record)
+        {
+            $object = new self();                         /** maak object van child class */
+            $object->setData($record);                      /** stop data erin */
+            $objects[] = $object;                           /** voeg toe aan return-array */
+        }
+
+        return $objects;
+    }
 
     public function getgender()
     {
@@ -95,7 +131,7 @@ class People extends Model
         $pdo = Database::getInstance()->getPdo();
         $query =
             '
-            SELECT people.name, mp.character_name
+            SELECT people.name, mp.character_name, people.tmdb_person_id as id
             FROM people
             JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
             WHERE mp.id_movie = :id_movie && mp.role = "actor"

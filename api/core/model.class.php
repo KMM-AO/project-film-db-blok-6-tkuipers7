@@ -2,6 +2,7 @@
 
 namespace core;
 
+use app\models\People;
 use \core\Database;
 use PDO;
 
@@ -163,7 +164,7 @@ abstract class Model {
      * 
      * Deze method retourneert een array met alle objecten van de aanvragende child class.
      */
-    static public function index($select = '*')
+    static public function index($select = '*', $limit = null)
     {
         $pdo = Database::getInstance()->getPdo();           /** database-connectie */
         
@@ -174,7 +175,12 @@ abstract class Model {
             SELECT ' . $select . '
             FROM ' . $class::TABLENAME . '
         ';
-        
+
+        if ($limit !== null)
+        {
+            $query .= 'LIMIT ' . $limit;
+        }
+
         $statement = $pdo->prepare($query);                 /** query uitvoeren */
         $statement->execute();
 

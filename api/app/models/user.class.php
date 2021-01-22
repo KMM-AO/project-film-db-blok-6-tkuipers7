@@ -21,7 +21,7 @@ class User extends Model {
     public function __construct()
     {
         /**
-         * Roep de parent-constructor aan met één optionele parameter:
+         * Roep de parent-constructor aan met ï¿½ï¿½n optionele parameter:
          * primary-key-definitie als een array met twee elementen [naam, pdo-paramtype]
          *   default is ['id', PDO::PARAM_INT]
          */
@@ -145,7 +145,7 @@ class User extends Model {
                 
         if ($this->isValid())
         {
-            $this->getToken()->regenerate();
+            $this->getToken()->generate();
         }
     }
 
@@ -176,7 +176,7 @@ class User extends Model {
     {
         if ($this->name == '')
         {
-            $this->setError('name', 'naam is leeg');
+            $this->setError('username', 'naam is leeg');
         }    
     }
 
@@ -216,7 +216,7 @@ class User extends Model {
         }
         elseif ($this->password != $this->password_repeat)
         {
-            $this->setError('password_repeat', 'herhaalde wachtwoord is ongelijk aan eerste wachtwoord');
+            $this->setError('password2', 'herhaalde wachtwoord is ongelijk aan eerste wachtwoord');
         }
     }
 }

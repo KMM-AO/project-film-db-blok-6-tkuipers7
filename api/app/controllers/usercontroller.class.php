@@ -8,6 +8,7 @@
 namespace app\controllers;
 
 use app\models\User;
+use core\Token;
 
 class UserController extends Controller
 {
@@ -22,47 +23,6 @@ class UserController extends Controller
      * - doet POST-request naar api/user/register
      * - verstuurt name, email, password en password_repeat
      */
-    public function register_form()
-    {
-        $this->view->setTemplate('user_register');
-        $this->view->render();
-    }
-    
-    /**
-     * Loginformulier.
-     * 
-     * - doet POST-request naar api/user/login
-     * - verstuurt email en password
-     */
-    public function login_form()
-    {
-        $this->view->setTemplate('user_login');
-        $this->view->render();
-    }
-
-    /**
-     * Logoutformulier.
-     * 
-     * - doet POST-request naar api/user/logout
-     * - verstuurt token
-     */    
-    public function logout_form()
-    {
-        $this->view->setTemplate('user_logout');
-        $this->view->render();
-    }
-    
-    /**
-     * Authenticatieformulier.
-     * 
-     * - doet POST-request naar api/user/authenticate
-     * - verstuurt token
-     */
-    public function authenticate_form()
-    {
-        $this->view->setTemplate('user_authenticate');
-        $this->view->render();
-    }
 
     /**
      * API-requests
@@ -80,11 +40,10 @@ class UserController extends Controller
     public function register()
     {
         $user = new User();
-        
-        $user->setName(trim($_POST['name'] ?? ''));
+        $user->setName(trim($_POST['username'] ?? ''));
         $user->setEmail(trim($_POST['email'] ?? ''));
         $user->setPassword(trim($_POST['password'] ?? ''));
-        $user->setPasswordRepeat(trim($_POST['password_repeat'] ?? ''));
+        $user->setPasswordRepeat(trim($_POST['password2'] ?? ''));
         
         $user->register();
         
@@ -99,7 +58,6 @@ class UserController extends Controller
             $this->json->add('user_name', $user->name);
             $this->json->add('token', $user->getToken()->value);
         }
-        
         $this->json->render();
     }
     
@@ -134,6 +92,7 @@ class UserController extends Controller
         }
         
         $this->json->render();
+        token::deleteInvalid();
     }
 
     /**
@@ -157,12 +116,10 @@ class UserController extends Controller
         else
         {
             $this->json->add('success', true);
-            $this->json->add('user_name', $this->token->getUser()->name);
             
             $this->token->delete($success);
         }
-        
-        $this->json->render();    
+        $this->json->render();
     }
     
     /**

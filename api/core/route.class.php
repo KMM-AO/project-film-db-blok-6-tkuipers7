@@ -43,14 +43,13 @@ class Route
     
     private function methodMatches($method)
     {
-        $ok = ($method == $this->request_method);
-        return $ok;
+        return $method == $this->request_method;
     }
     
     private function uriMatches($uri)
     {
         // gebruik een teken als delimiter dat niet voorkomt in de geconfigureerde urls
-        $ok = preg_match('#^' . $this->request_url . '$#', $uri, $matches);
+        $ok = preg_match('~^' . $this->request_url . '$~', $uri, $matches);
         if ($ok) {
             $this->request_parameters = array_slice($matches, 1);
         }

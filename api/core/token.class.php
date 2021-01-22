@@ -11,12 +11,12 @@ class Token extends Model {
     const TABLENAME = 'tokens';
     
     /** relatie-properties */
-    private $user;              // token heeft 1-op-1-relatie met user
+    private $user;              // token heeft 1-op-meer-relatie met user
     
     public function __construct()
     {
         /**
-         * Roep de parent-constructor aan met één optionele parameter:
+         * Roep de parent-constructor aan met ï¿½ï¿½n optionele parameter:
          * primary-key-definitie als een array met twee elementen [naam, pdo-paramtype]
          *   default is ['id', PDO::PARAM_INT]
          */
@@ -128,5 +128,15 @@ class Token extends Model {
         
         return $this->isValid();
     }
- 
+
+    static public function deleteInvalid() {
+        $query =
+            '
+            DELETE
+            FROM tokens
+            WHERE UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(date_created) > 86400
+        ';
+        $statement = Database::getInstance()->getPdo()->prepare($query);
+        $statement->execute();
+    }
 }

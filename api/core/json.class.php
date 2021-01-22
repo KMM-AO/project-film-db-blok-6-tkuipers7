@@ -23,15 +23,15 @@ class Json
      */
     public function __construct()
     {
-        $this->setStatus(200, 'ok');
+        $this->setStatus(200, true);
     }
     
     /** 
-     * Stop een status in de response-data (code en message)
+     * Stop een status in de response-data (code en success)
      */
-    public function setStatus($code, $message)
+    public function setStatus($code, $success)
     {
-        $this->add('status', ['code' => $code, 'message' => $message]);
+        $this->add('status', ['code' => $code, 'success' => $success]);
     }
     
     /**
@@ -48,8 +48,13 @@ class Json
      */
     public function render()
     {
-        header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=utf8');
+        header('Access-Control-Allow-Origin: http://localhost:8080');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Max-Age: 1000');
+        header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type");
+
         echo json_encode($this->data);
     }
 }

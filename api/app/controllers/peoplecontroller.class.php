@@ -21,7 +21,7 @@ class peoplecontroller extends Controller
             {
                 $data['associated_movies'][] = $movie->GetData();
             }
-            $this->json->add('person', $data);
+            $this->json->add('response', [$data]);
         }
         else
         {
@@ -32,17 +32,33 @@ class peoplecontroller extends Controller
 
     public function index_json()
     {
-        $actors = People::indexActors();
+        $persons = People::index('tmdb_person_id as id, people.name, genders.name as gender, profile_path');
 
-        if (isset($actors))
+        $data = [];
+        if (count($persons) > 0)
         {
-            $data = [];
-            foreach ($actors as $actor)
+            foreach ($persons as $person)
             {
-                $data[] = $actor->GetData();
+                $data[] = $person->GetData();
             }
-            $this->json->add('actors', $data);
         }
+        $this->json->add('response', $data);
+        $this->json->render();
+    }
+
+    public function index_json_limit($limit)
+    {
+        $persons = People::index('tmdb_person_id as id, people.name, genders.name as gender, profile_path',$limit);
+
+        $data = [];
+        if (count($persons) > 0)
+        {
+            foreach ($persons as $person)
+            {
+                $data[] = $person->GetData();
+            }
+        }
+        $this->json->add('response', $data);
         $this->json->render();
     }
 }

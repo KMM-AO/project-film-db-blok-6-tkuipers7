@@ -76,7 +76,7 @@ class Router
     {
         if (!isset($this->request))
         {
-            $this->request = new Request($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+            $this->request = new Request();
         }
         return $this->request;
     }

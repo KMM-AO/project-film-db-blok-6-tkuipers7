@@ -9,6 +9,14 @@ class movie extends model
 {
     /** de bijbehorende database-tabel */
     const TABLENAME = 'movies';
+    const PRIMARY_NAME = 'tmdb_id';
+    const PRIMARY_TYPE = PDO::PARAM_INT;
+
+    const ALLOWEDSEARCH = [
+      'actor',
+      'director',
+      'movies'
+    ];
 
     /** relatie-properties */
     private $genres;
@@ -21,12 +29,12 @@ class movie extends model
          * primary-key-definitie als een array met twee elementen [naam, pdo-paramtype]
          *   default is ['id', PDO::PARAM_INT]
          */
-        parent::__construct(['tmdb_id', PDO::PARAM_INT]);
+        parent::__construct([self::PRIMARY_NAME, self::PRIMARY_TYPE]);
     }
 
-    /**
-     * relaties
-     */
+    static public function searchIsAllowed($search) {
+        return in_array($search,self::ALLOWEDSEARCH);
+    }
 
     static public function indexByPerson(People $person)
     {
@@ -56,6 +64,43 @@ class movie extends model
         return $objects;
     }
 
+    static public function indexSearch($type,$search, $limit )
+    {
+        $pdo = Database::getInstance()->getPdo();
+
+        $query =
+            '
+                SELECT DISTINCT tmdb_id as id, title,original_title, poster_path
+                FROM movies
+        ';
+
+        if ($type === 'movies')
+        {
+            $query .= ' WHERE original_title || title LIKE "%'.$search.'%"';
+        }
+        elseif ($type === 'actor' || $type === 'director')
+        {
+            $query .= ' JOIN movie_person ON id_movie = ' . self::TABLENAME . '.' . self::PRIMARY_NAME . '
+            JOIN ' . People::TABLENAME . ' ON ' . People::TABLENAME . '.' . People::PRIMARY_NAME . ' = id_person 
+            WHERE role = "' . $type . '" && ' . People::TABLENAME . '.name LIKE "%' . $search . '%"';
+        }
+
+        $query .= ' LIMIT '. $limit ;
+        $statement = $pdo->prepare($query);
+        $statement->execute();
+
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $objects = [];
+
+        foreach ($records as $record) {
+            $object = new self();
+            $object->setData($record);
+            $objects[] = $object;
+        }
+
+        return $objects;
+    }
+
     public function getGenres()
     {
         if (!isset($this->genres)) {
@@ -71,4 +116,6 @@ class movie extends model
         }
         return $this->actors;
     }
+
+
 }

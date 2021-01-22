@@ -1,10 +1,8 @@
 <?php
 
-
 namespace app\controllers;
 
 use app\models\Movie;
-use app\models\People;
 
 class moviecontroller extends Controller
 {
@@ -13,31 +11,28 @@ class moviecontroller extends Controller
         $movie = new Movie();
         $movie->setPK($movie_id);
         $movie->load($success);
+        $data = [];
         if ($success)
         {
-            $movie_data = $movie->getData();
-            $movie_data['genres'] = [];
+            $data = $movie->getData();
+            $data['genres'] = [];
             foreach ($movie->getGenres() as $genre)
             {
-                $movie_data['genres'][] = $genre->getData();
+                $data['genres'][] = $genre->getData();
             }
-            $movie_data['actors'] = [];
+            $data['actors'] = [];
             foreach ($movie->getActors() as $actor)
             {
-                $movie_data['actors'][] = $actor->getData();
+                $data['actors'][] = $actor->getData();
             }
-            $this->json->add('movie', $movie_data);
         }
-        else
-        {
-            $this->json->setStatus(404, 'Not Found');
-        }
+        $this->json->add('response',[$data]);
         $this->json->render();
     }
 
     public function index_json()
     {
-        $movies = Movie::index('tmdb_id as id,original_title, poster_path');
+        $movies = Movie::index('tmdb_id as id, title,original_title, poster_path');
 
         $data = [];
         if (count($movies) > 0)
@@ -47,7 +42,45 @@ class moviecontroller extends Controller
                 $data[] = $movie->GetData();
             }
         }
-        $this->json->add('movies', $data);
+        $this->json->add('response', $data);
+        $this->json->render();
+    }
+
+    public function index_json_limit($limit)
+    {
+        $movies = Movie::index('tmdb_id as id, title,original_title, poster_path',$limit);
+
+        $data = [];
+        if (count($movies) > 0)
+        {
+            foreach ($movies as $movie)
+            {
+                $data[] = $movie->GetData();
+            }
+        }
+        $this->json->add('response', $data);
+        $this->json->render();
+    }
+
+    public function search($type,$input,$limit)
+    {
+
+        if (Movie::searchIsAllowed($type))
+        {
+            $movies = Movie::indexSearch($type, $input, $limit);
+            $data = [];
+            if (count($movies) > 0)
+            {
+                foreach ($movies as $movie)
+                {
+                    $data[] = $movie->GetData();
+                }
+            }
+            $this->json->add('response',$data);
+        } else {
+            $this->json->add('response', []);
+        }
+
         $this->json->render();
     }
 }

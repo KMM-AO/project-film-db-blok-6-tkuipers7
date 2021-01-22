@@ -7,7 +7,6 @@
 
 namespace app\controllers;
 
-use \core\View;
 use \core\Json;
 use \core\Token;
 
@@ -16,7 +15,6 @@ abstract class Controller
     /**
      * Het view object, wordt alleen gebruikt voor html-responses.
      */
-    protected $view;
 
     /** 
      * Het json object, wordt alleen gebruikt voor json-responses.
@@ -35,7 +33,6 @@ abstract class Controller
      */
     public function __construct()
     {
-        $this->view = new View();
         $this->json = new Json();
         $this->token = new Token();
     }
