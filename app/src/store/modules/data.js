@@ -59,16 +59,17 @@ const actions = {
                 await dispatch('axiosGET', `${input.page}/search/${input.input}`)
             }
         } else if (currentRoute === 'movies') {
-            dispatch('getMovies', 6)
+            dispatch('getMovies', getters.page.step)
         } else if (currentRoute === 'persons') {
-            dispatch('getPersons',6)
+            dispatch('getPersons',getters.page.step)
         }
     },
 
     async viewMore({getters, dispatch}) {
         if (getters.getlastCall.length > 0 && getters.page.end <= getters.getdata.length) {
             getters.page.end += getters.page.step
-            await dispatch('axiosGET', getters.getlastCall + getters.page.end)
+            let url = await getters.getlastCall.replace(/\/[0-9]+$/, "/") + getters.page.end;
+            await dispatch('axiosGET', url)
         }
     }
 };

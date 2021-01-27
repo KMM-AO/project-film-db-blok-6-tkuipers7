@@ -23,7 +23,7 @@
               <b>actors: </b>
               <span  v-if="movie.actors.length > 0">
                 <span v-for="(person,key) in movie.actors" :key="key">
-                  <a class="link-primary" @click.prevent="toperson(person)">{{ person.name }} as {{ person.character_name }}</a><span v-if="key !== movie.actors.length - 1">,</span>
+                  <a class="link-primary" @click.prevent="toPerson(person.id)">{{ person.name }} as {{ person.character_name }}</a><span v-if="key !== movie.actors.length - 1">,</span>
                 </span>
               </span>
               <span v-else>no actors found</span>
@@ -56,11 +56,12 @@ import {mapGetters, mapActions} from 'vuex'
       },
       methods: {
         ...mapActions(['getMovie']),
-        toperson(person){
-          this.$router.push(`person/${person.id}`)
+        toPerson(id){
+          this.$router.push(`person/${id}`)
         }
       },
       async created() {
+        console.log(this.$route.params.key)
         await this.getMovie(this.$route.params.key)
       }
     }

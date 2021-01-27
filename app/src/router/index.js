@@ -81,9 +81,9 @@ router.beforeEach(( to,from,next) => {
   }
 })
 
-router.beforeEach(() => {
-  Store.commit('setData', [])
-  Store.commit('resetPage')
+router.beforeEach(async () => {
+  await Store.commit('setData', [])
+  await Store.commit('resetPage')
 })
 
 router.beforeEach((to, from, next) => {
