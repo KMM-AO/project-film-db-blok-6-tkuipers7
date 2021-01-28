@@ -23,7 +23,7 @@
         movie: Object,
       },
       computed: {
-        getposter: function () {
+        getposter() {
           if (this.movie.poster_path.length > 0) {
             return "https://image.tmdb.org/t/p/w342" + this.movie.poster_path
           }
@@ -31,7 +31,7 @@
         },
       },
       methods: {
-        goToMovie: function () {
+        goToMovie() {
           this.$router.push({path:`/movie/${this.movie.id}`})
         },
       },

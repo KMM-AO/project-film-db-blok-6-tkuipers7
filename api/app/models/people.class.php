@@ -11,6 +11,11 @@ class People extends Model
     const PRIMARY_NAME = 'tmdb_person_id';
     const PRIMARY_TYPE = PDO::PARAM_INT;
 
+    const ALLOWEDSEARCH = [
+        'actor',
+        'director'
+    ];
+
     private $associated_movies;
     private $gender;
 
@@ -22,6 +27,10 @@ class People extends Model
          *   default is ['id', PDO::PARAM_INT]
          */
         parent::__construct([self::PRIMARY_NAME, self::PRIMARY_TYPE]);
+    }
+
+    static public function searchIsAllowed($search) {
+        return in_array($search,self::ALLOWEDSEARCH);
     }
 
     /**
@@ -103,6 +112,7 @@ class People extends Model
         return $this->associated_movies;
     }
 
+    //54768
     static public function indexActors()
     {
         $pdo = Database::getInstance()->getPdo();
@@ -150,6 +160,42 @@ class People extends Model
                 $object->setData($record);
                 $objects[] = $object;
             }
+        }
+
+        return $objects;
+    }
+
+//    SELECT people.tmdb_person_id as id, people.name, mp.role
+//    FROM people
+//    JOIN movie_person AS mp ON people.tmdb_person_id = mp.id_person
+//    WHERE mp.role = "director" && people.name LIKE '%Turo%'
+
+    static public function indexSearch($type,$search, $limit )
+    {
+        $pdo = Database::getInstance()->getPdo();
+
+        $query =
+            '
+                SELECT DISTINCT ' . self::PRIMARY_NAME . ' as id, name, profile_path
+                FROM ' . self::TABLENAME . '
+        ';
+
+        $query .= ' JOIN movie_person ON id_person = ' . self::PRIMARY_NAME . '
+        WHERE role = "' . $type . '" && ' . self::TABLENAME . '.name LIKE "%' . $search . '%"';
+
+        if (isset($limit)){
+            $query .= ' LIMIT '. $limit ;
+        }
+        $statement = $pdo->prepare($query);
+        $statement->execute();
+
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $objects = [];
+
+        foreach ($records as $record) {
+            $object = new self();
+            $object->setData($record);
+            $objects[] = $object;
         }
 
         return $objects;

@@ -1,10 +1,10 @@
 <template>
-$END$
+
 </template>
 
 <script>
 export default {
-name: "Footer.vue"
+name: "Footer"
 }
 </script>
 

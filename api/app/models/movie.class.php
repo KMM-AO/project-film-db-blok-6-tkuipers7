@@ -64,7 +64,7 @@ class movie extends model
         return $objects;
     }
 
-    static public function indexSearch($type,$search, $limit )
+    static public function indexSearch($type,$search, $limit  = null)
     {
         $pdo = Database::getInstance()->getPdo();
 
@@ -85,7 +85,9 @@ class movie extends model
             WHERE role = "' . $type . '" && ' . People::TABLENAME . '.name LIKE "%' . $search . '%"';
         }
 
-        $query .= ' LIMIT '. $limit ;
+        if (isset($limit)){
+            $query .= ' LIMIT '. $limit ;
+        }
         $statement = $pdo->prepare($query);
         $statement->execute();
 

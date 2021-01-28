@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <h1 class="d-flex justify-content-center my-5" style="font-size: 50px">People</h1>
+    <!--  title  -->
+    <h1 class="d-flex justify-content-center mt-5" style="font-size: 50px">People</h1>
+    <!--  search  -->
+    <div class="d-flex container justify-content-end align-items-center py-4">
+      <searchbar />
+    </div>
     <!--  Persons  -->
     <div v-if="hasdata" class="container d-flex flex-wrap justify-content-lg-around">
       <Personcard v-for="(person, key) in getdata"
@@ -12,12 +17,12 @@
 </template>
 
 <script>
-// import searchbar from "@/components/searchbar";
+import searchbar from "@/components/searchbar";
 import Personcard from "@/components/Personcard.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
-    // searchbar,
+    searchbar,
     Personcard
   },
   computed: {

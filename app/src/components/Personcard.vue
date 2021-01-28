@@ -1,18 +1,18 @@
 <template>
   <!-- card -->
-  <div class="card pointer" style="width: 18rem;" @click="goToPerson">
+  <div class="card pointer" style="width: 18rem;" @click.prevent="goToPerson">
     <img :src="getposter" class="card-img-top" alt="">
-    <div class="card-body">
+    <div class="card-body d-flex flex-column align-items-start justify-content-end">
       <h5 class="card-title">{{ person.name }}</h5>
       <p class="card-text">{{ person.biography }}</p>
-      <a href="">read more</a>
+      <a class="link-primary" @click.prevent="goToPerson">read more</a>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'personCard',
+  name: 'Personcard',
   data () {
     return {
       poster: "",
@@ -40,6 +40,7 @@ export default {
 <style scoped>
 .card {
   min-width: 342px;
+  min-height: 695px;
   flex: 0 31%;
   margin-bottom: 2%;
   border: none;

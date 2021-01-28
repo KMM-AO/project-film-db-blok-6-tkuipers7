@@ -19,13 +19,14 @@ const getters = {
 
 const actions = {
     async axiosGET({commit},url) {
+        console.log("url: ",url)
         try {
             let res = await axios.get(url)
             await commit('setLastCall',url)
             if (res.data.status.success) {
-                commit('setData',res.data.response)
+                await commit('setData',res.data.response)
             } else {
-                commit('setData', [])
+                await commit('setData', [])
             }
         } catch (e) {
             console.log('error: ',e)

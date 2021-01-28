@@ -102,7 +102,7 @@ $this->allowed_routes =
 
     // search for a movie with a specific actor or director or name
     new Route(
-        'movies/search/([a-zA-z0-9]+)/([a-zA-z 0-9]+)/([1-9][0-9]*)',
+        'movies/search/([a-zA-Z0-9]+)/([a-zA-Z 0-9]+)/([1-9][0-9]*)',
         'GET',
         'MovieController',
         'search'
@@ -110,7 +110,7 @@ $this->allowed_routes =
 
     // search for a actor
     new Route(
-        'persons/search/([a-zA-z0-9]+)/([1-9][0-9]*)',
+        'persons/search/([a-zA-Z0-9]+)/([a-zA-Z 0-9]+)/([1-9][0-9]*)',
         'GET',
         'PeopleController',
         'search'

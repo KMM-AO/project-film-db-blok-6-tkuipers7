@@ -61,4 +61,25 @@ class peoplecontroller extends Controller
         $this->json->add('response', $data);
         $this->json->render();
     }
+    public function search($type,$input,$limit)
+    {
+
+        if (People::searchIsAllowed($type))
+        {
+            $persons = People::indexSearch($type, $input, $limit);
+            $data = [];
+            if (count($persons) > 0)
+            {
+                foreach ($persons as $person)
+                {
+                    $data[] = $person->GetData();
+                }
+            }
+            $this->json->add('response',$data);
+        } else {
+            $this->json->add('response', []);
+        }
+
+        $this->json->render();
+    }
 }
