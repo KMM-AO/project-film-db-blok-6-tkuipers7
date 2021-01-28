@@ -65,7 +65,7 @@ const actions = {
         }
     },
 
-    async viewMore({getters, dispatch}) {
+    async viewmore({getters, dispatch}) {
         if (getters.getlastCall.length > 0 && getters.page.end <= getters.getdata.length) {
             getters.page.end += getters.page.step
             let url = await getters.getlastCall.replace(/\/[0-9]+$/, "/") + getters.page.end;

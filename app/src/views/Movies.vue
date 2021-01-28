@@ -35,12 +35,9 @@
         <MovieCard v-for="(movie, key) in getdata"
                    :key="key"
                    :movie="movie"
-                   :id="key"
         />
       </div>
-      <div v-if="hasdata" class="d-flex">
-        <button @click.prevent="viewMore" class="btn btn-success mr-3">view more</button>
-      </div>
+      <viewmore />
       <div v-if="!hasdata">
         <h1>No movies has been found</h1>
       </div>
@@ -49,8 +46,9 @@
 </template>
 
 <script>
-  import MovieCard from '@/components/MovieCard';
+  import MovieCard from '@/components/Moviecard';
   import searchbar from "@/components/searchbar";
+  import viewmore from "@/components/Viewmore"
   import {mapActions, mapGetters} from 'vuex'
 
   export default {
@@ -60,13 +58,14 @@
     },
     components: {
       MovieCard,
-      searchbar
+      searchbar,
+      viewmore
     },
     computed: {
-      ...mapGetters(['getdata', 'hasdata', 'getlanding','page']),
+      ...mapGetters(['getdata', 'hasdata', 'getlanding']),
     },
     methods: {
-      ...mapActions(['getMovies', 'searchMovie','viewMore']),
+      ...mapActions(['viewMore']),
     }
   }
 </script>
@@ -94,13 +93,5 @@
 }
 .form-check-label {
   font-size: 27px;
-}
-.btn-success {
-  border-color: #66988C;
-  background-color: #66988C;
-}
-.btn-success:hover {
-  border-color: #66988C;
-  background: none;
 }
 </style>

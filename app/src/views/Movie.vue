@@ -47,7 +47,6 @@ import {mapGetters, mapActions} from 'vuex'
       computed: {
         ...mapGetters(['getdata','hasdata']),
         movie(){
-          console.log(this.getdata[0])
           return this.getdata[0]
         },
         getposter() {
@@ -61,7 +60,6 @@ import {mapGetters, mapActions} from 'vuex'
         }
       },
       async created() {
-        console.log(this.$route.params.key)
         await this.getMovie(this.$route.params.key)
       }
     }
