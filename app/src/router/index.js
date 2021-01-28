@@ -58,11 +58,6 @@ const routes = [
     }
   },
   {
-    path: '/test',
-    name: 'test',
-    component: () => import('@/views/test')
-  },
-  {
     path: '/:pathMatch(.*)*',
     name: '404',
   }

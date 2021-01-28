@@ -13,17 +13,22 @@
                  :person="person"
       />
     </div>
+    <div class="d-flex justify-content-center py-4">
+      <Viewmore />
+    </div>
   </div>
 </template>
 
 <script>
 import searchbar from "@/components/searchbar";
 import Personcard from "@/components/Personcard.vue";
+import Viewmore from "@/components/Viewmore";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     searchbar,
-    Personcard
+    Personcard,
+    Viewmore
   },
   computed: {
     ...mapGetters(['getdata', 'hasdata']),

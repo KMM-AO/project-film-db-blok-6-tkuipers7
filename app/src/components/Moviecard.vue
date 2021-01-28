@@ -24,10 +24,7 @@
       },
       computed: {
         getposter() {
-          if (this.movie.poster_path.length > 0) {
-            return "https://image.tmdb.org/t/p/w342" + this.movie.poster_path
-          }
-          return this.poster
+          return this.movie.poster_path.length > 0 ? "https://image.tmdb.org/t/p/w342" + this.movie.poster_path : this.poster
         },
       },
       methods: {
@@ -44,9 +41,6 @@
     flex: 0 31%;
     margin-bottom: 2%;
     border: none;
-  }
-  .pointer {
-    cursor: pointer;
   }
   .overlay {
     background: rgba(0,0,0,.65);

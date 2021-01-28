@@ -21,5 +21,7 @@ import Nav from '@/components/Nav'
   min-height: 100vh;
   color: white;
 }
-
+.pointer {
+  cursor: pointer;
+}
 </style>

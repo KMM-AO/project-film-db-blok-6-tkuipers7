@@ -1,5 +1,5 @@
 <template>
-  <div class="container d-flex justify-content-center align-items-center vh-100" v-if="hasdata">
+  <div class="container d-flex justify-content-center align-items-center vh-100 " v-if="hasdata">
     <div class="card mb-3">
       <div class="row g-0">
         <div class="col-md-4">
@@ -8,26 +8,13 @@
         </div>
         <div class="col-md-8 d-flex flex-column py-3">
           <div class="card-body">
-            <h2 class="card-title">{{ movie.title }}</h2>
-            <p class="card-text"><b>original title: </b> {{ movie.title }}</p>
-            <p class="card-text"><b>run time: </b> {{ movie.runtime }} min</p>
-            <p class="card-text"><b>description: </b> {{ movie.description}}</p>
-            <p class="card-text"><b>adult: </b> {{ movie.adult === 1 }}</p>
-            <p class="card-text">
-              <b>genres: </b>
-              <span v-for="(genre,key) in movie.genres" :key="key">
-                {{ genre.name }}<span v-if="key !== movie.genres.length - 1">,</span>
-              </span>
-            </p>
-            <p class="card-text">
-              <b>actors: </b>
-              <span  v-if="movie.actors.length > 0">
-                <span v-for="(person,key) in movie.actors" :key="key">
-                  <a class="link-primary" @click.prevent="toPerson(person.id)">{{ person.name }} as {{ person.character_name }}</a><span v-if="key !== movie.actors.length - 1">,</span>
-                </span>
-              </span>
-              <span v-else>no actors found</span>
-            </p>
+            <h2 class="card-title">{{ person.name }}</h2>
+            <p class="card-text"><b>Name: </b> {{ person.name }}</p>
+            <p class="card-text"><b>Biography: </b> {{ getbiography }}</p>
+            <p class="card-text"><b>Gender: </b> {{ person.gender }}</p>
+            <p class="card-text"><b>Birthday: </b> {{ person.date_of_birth }}</p>
+            <p class="card-text" v-if="person.date_of_death.length > 0"><b>date of death: </b> {{ person.date_of_death }}</p>
+            <p class="card-text"><b>Born in: </b> {{ person.place_of_birth }}</p>
           </div>
         </div>
       </div>
@@ -41,26 +28,35 @@ export default {
   name: 'Person',
   data() {
     return {
-      poster: ''
+      poster: '',
     }
   },
   computed: {
     ...mapGetters(['getdata','hasdata']),
-    movie(){
+    person(){
+      console.log(this.getdata[0])
       return this.getdata[0]
     },
     getposter() {
-      return this.movie.poster_path.length > 0 ? "https://image.tmdb.org/t/p/w342" + this.movie.poster_path : this.poster
+      return this.person.profile_path.length > 0 ? "https://image.tmdb.org/t/p/w342" + this.person.profile_path : this.poster
     },
-  },
-  methods: {
-    ...mapActions(['getMovie']),
-    toPerson(id){
-      this.$router.push(`person/${id}`)
+    getbiography() {
+      let biography = this.person.biography;
+      if (biography.length > 120){
+       biography = biography.slice(0,400) + '...'
+
+      }
+      return biography
     }
   },
+  methods: {
+    ...mapActions(['getPerson']),
+    toPerson(id){
+      this.$router.push(`person/${id}`)
+    },
+  },
   async created() {
-    await this.getMovie(this.$route.params.key)
+    await this.getPerson(this.$route.params.key)
   }
 }
 </script>
@@ -68,6 +64,7 @@ export default {
 <style scoped>
 .card {
   background-color: #1A4343;
+  min-width: 95%;
 }
 p {
   margin-bottom: 6px;
