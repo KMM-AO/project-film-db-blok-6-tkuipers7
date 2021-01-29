@@ -37,6 +37,7 @@ const actions = {
         userdata.append('token', state.user.token)
         await axios.post('user/logout', userdata)
         commit('logout')
+        await router.push('/')
     },
     async addFavorite({commit,getters}, movie) {
         await axios.post(`addFavorite/${movie.id}`, getters.StateUser)

@@ -24,6 +24,7 @@ import searchbar from "@/components/searchbar";
 import Personcard from "@/components/Personcard.vue";
 import Viewmore from "@/components/Viewmore";
 import { mapActions, mapGetters } from "vuex";
+
 export default {
   components: {
     searchbar,

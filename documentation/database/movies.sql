@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.1
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 05 dec 2020 om 21:07
--- Serverversie: 10.4.11-MariaDB
--- PHP-versie: 7.4.2
+-- Gegenereerd op: 29 jan 2021 om 09:59
+-- Serverversie: 10.4.14-MariaDB
+-- PHP-versie: 7.4.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -21,6 +20,18 @@ SET time_zone = "+00:00";
 --
 -- Database: `movies`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabelstructuur voor tabel `favorites`
+--
+
+CREATE TABLE `favorites` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `id_user` int(11) UNSIGNED NOT NULL COMMENT 'id van de user',
+  `id_movie` int(11) UNSIGNED NOT NULL COMMENT 'id van de film'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -172,7 +183,6 @@ CREATE TABLE `movie_person` (
 --
 
 INSERT INTO `movie_person` (`id`, `id_movie`, `id_person`, `role`, `character_name`) VALUES
-(6671, 2, 54768, 'actor', 'Taisto Olavi Kasurinen'),
 (6672, 2, 54769, 'actor', 'Irmeli Katariina Pihlaja'),
 (6673, 2, 4826, 'actor', 'Mikkonen'),
 (6674, 2, 54770, 'actor', 'Riku'),
@@ -551,7 +561,8 @@ INSERT INTO `movie_person` (`id`, `id_movie`, `id_person`, `role`, `character_na
 (7047, 15, 1331758, 'actor', 'Man Singing at Inquirer Party (uncredited)'),
 (7048, 15, 1170356, 'actor', 'Man Singing at Inquirer Party (uncredited)'),
 (7049, 15, 1419570, 'actor', 'Man Singing at Inquirer Party (uncredited)'),
-(7050, 15, 1420567, 'actor', 'Man Singing at Inquirer Party (uncredited)');
+(7050, 15, 1420567, 'actor', 'Man Singing at Inquirer Party (uncredited)'),
+(7051, 2, 54768, 'actor', 'Taisto Olavi Kasurinen');
 
 -- --------------------------------------------------------
 
@@ -972,12 +983,14 @@ CREATE TABLE `ratings` (
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `token`
+-- Tabelstructuur voor tabel `tokens`
 --
 
-CREATE TABLE `token` (
-  `id` int(11) UNSIGNED NOT NULL COMMENT 'id van de token',
-  `value` varchar(255) NOT NULL COMMENT 'de token'
+CREATE TABLE `tokens` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `value` varchar(255) NOT NULL COMMENT 'de token',
+  `id_user` int(11) UNSIGNED NOT NULL COMMENT 'id van de user',
+  `date_created` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'de tijd dat de token gecreëerd is'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -989,23 +1002,28 @@ CREATE TABLE `token` (
 CREATE TABLE `users` (
   `id` int(11) UNSIGNED NOT NULL COMMENT 'id van de user',
   `name` varchar(255) NOT NULL COMMENT 'naam van de user',
-  `pass_hash` varchar(255) NOT NULL COMMENT 'een ge-hashed password'
+  `email` varchar(255) NOT NULL COMMENT 'email van de user',
+  `password_hash` varchar(255) NOT NULL COMMENT 'een ge-hashed password'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
--- Tabelstructuur voor tabel `user_token`
+-- Gegevens worden geëxporteerd voor tabel `users`
 --
 
-CREATE TABLE `user_token` (
-  `id_user` int(11) UNSIGNED NOT NULL COMMENT 'id van de user',
-  `id_token` int(11) UNSIGNED NOT NULL COMMENT 'id van de token'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `users` (`id`, `name`, `email`, `password_hash`) VALUES
+(15, 'gamerkuipers', 'gamerkuipers@gmail.com', '$2y$10$3fvtOm55OzXYerC/Q4Ghi.fo9hRCJ6sjnqvSoy/ajKZkUvjxIZ37e');
 
 --
 -- Indexen voor geëxporteerde tabellen
 --
+
+--
+-- Indexen voor tabel `favorites`
+--
+ALTER TABLE `favorites`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id_movie` (`id_movie`),
+  ADD KEY `id_user` (`id_user`);
 
 --
 -- Indexen voor tabel `genders`
@@ -1056,10 +1074,11 @@ ALTER TABLE `ratings`
   ADD KEY `id_user` (`id_user`);
 
 --
--- Indexen voor tabel `token`
+-- Indexen voor tabel `tokens`
 --
-ALTER TABLE `token`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`);
 
 --
 -- Indexen voor tabel `users`
@@ -1068,21 +1087,20 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexen voor tabel `user_token`
---
-ALTER TABLE `user_token`
-  ADD KEY `id_user` (`id_user`),
-  ADD KEY `id_token` (`id_token`);
-
---
 -- AUTO_INCREMENT voor geëxporteerde tabellen
 --
+
+--
+-- AUTO_INCREMENT voor een tabel `favorites`
+--
+ALTER TABLE `favorites`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT voor een tabel `movie_person`
 --
 ALTER TABLE `movie_person`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de relatie tussen de movie en de persoon', AUTO_INCREMENT=7051;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de relatie tussen de movie en de persoon', AUTO_INCREMENT=7052;
 
 --
 -- AUTO_INCREMENT voor een tabel `ratings`
@@ -1091,20 +1109,27 @@ ALTER TABLE `ratings`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de rating';
 
 --
--- AUTO_INCREMENT voor een tabel `token`
+-- AUTO_INCREMENT voor een tabel `tokens`
 --
-ALTER TABLE `token`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de token';
+ALTER TABLE `tokens`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT voor een tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de user';
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id van de user', AUTO_INCREMENT=17;
 
 --
 -- Beperkingen voor geëxporteerde tabellen
 --
+
+--
+-- Beperkingen voor tabel `favorites`
+--
+ALTER TABLE `favorites`
+  ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`id_movie`) REFERENCES `movies` (`tmdb_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Beperkingen voor tabel `movie_genre`
@@ -1134,11 +1159,10 @@ ALTER TABLE `ratings`
   ADD CONSTRAINT `ratings_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Beperkingen voor tabel `user_token`
+-- Beperkingen voor tabel `tokens`
 --
-ALTER TABLE `user_token`
-  ADD CONSTRAINT `user_token_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `user_token_ibfk_2` FOREIGN KEY (`id_token`) REFERENCES `token` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `tokens`
+  ADD CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

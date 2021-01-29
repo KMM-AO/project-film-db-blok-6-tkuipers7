@@ -45,7 +45,6 @@
   .overlay {
     background: rgba(0,0,0,.65);
   }
-
   .fade-enter-active,
   .fade-leave-active{
     transition: opacity 0.5s ease;

@@ -19,7 +19,6 @@ const getters = {
 
 const actions = {
     async axiosGET({commit},url) {
-        console.log("url: ",url)
         try {
             let res = await axios.get(url)
             await commit('setLastCall',url)

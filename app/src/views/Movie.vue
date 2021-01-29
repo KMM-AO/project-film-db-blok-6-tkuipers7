@@ -16,18 +16,25 @@
             <p class="card-text">
               <b>genres: </b>
               <span v-for="(genre,key) in movie.genres" :key="key">
-                {{ genre.name }}<span v-if="key !== movie.genres.length - 1">,</span>
+                {{ genre.name }}<span v-if="key !== movie.genres.length - 1">, </span>
               </span>
             </p>
             <p class="card-text">
               <b>actors: </b>
               <span  v-if="movie.actors.length > 0">
                 <span v-for="(person,key) in movie.actors" :key="key">
-                  <a class="link-primary" @click.prevent="toPerson(person.id)">{{ person.name }} as {{ person.character_name }}</a><span v-if="key !== movie.actors.length - 1">,</span>
+                  <a class="link-primary pointer" @click.prevent="toPerson(person.id)">{{ person.name }} as {{ person.character_name }}</a><span v-if="key !== movie.actors.length - 1">,</span>
                 </span>
               </span>
               <span v-else>no actors found</span>
             </p>
+          </div>
+          <div class="d-flex">
+            <i v-for="i in 5" :key="i" :class="{'fas fa-star': isAuthenticated && i <= getRating, 'far fa-star': isAuthenticated && i > getRating, 'far fa-star disabled': !isAuthenticated}" class="px-1"></i>
+            <i :class="{'fas fa-heart': isAuthenticated && hasFavorite, 'far fa-heart': isAuthenticated && !hasFavorite,'far fa-heart disabled': !isAuthenticated}"></i>
+            <div v-if="!isAuthenticated" class="text-muted ps-2">
+              Login in to rate or favor the movie
+            </div>
           </div>
         </div>
       </div>
@@ -45,7 +52,7 @@ import {mapGetters, mapActions} from 'vuex'
         }
       },
       computed: {
-        ...mapGetters(['getdata','hasdata']),
+        ...mapGetters(['getdata','hasdata','isAuthenticated','getRating','hasFavorite']),
         movie(){
           return this.getdata[0]
         },
@@ -71,5 +78,16 @@ import {mapGetters, mapActions} from 'vuex'
 }
 p {
   margin-bottom: 6px;
+}
+i.far,
+i.fas {
+  color: yellow;
+  font-size: 25px;
+}
+i.fa-heart {
+  color: pink;
+}
+i.disabled {
+  color: rgba(191, 191, 191, .5);
 }
 </style>

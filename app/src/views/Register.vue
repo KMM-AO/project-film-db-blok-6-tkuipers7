@@ -51,7 +51,6 @@
         try {
           console.log(this.$refs.register)
           let res = await this.Register(this.$refs.register);
-          console.log('res',res)
           if (typeof res !== 'undefined') {
             this.errors = res
             console.log(this.errors)
