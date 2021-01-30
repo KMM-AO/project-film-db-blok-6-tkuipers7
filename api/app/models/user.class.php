@@ -10,14 +10,18 @@ class User extends Model {
     
     /** de bijbehorende database-tabel */
     const TABLENAME = 'users';
+    const PRIMARY_NAME = 'id';
+    const PRIMARY_TYPE = PDO::PARAM_INT;
 
     /** relatie-properties */
     private $token;             // user heeft 1-op-1-relatie met token
-    
+    private $favorites;
+    private $ratings;
+
     /** password properties */
     private $password;
     private $password_repeat;
-    
+
     public function __construct()
     {
         /**
@@ -25,7 +29,7 @@ class User extends Model {
          * primary-key-definitie als een array met twee elementen [naam, pdo-paramtype]
          *   default is ['id', PDO::PARAM_INT]
          */
-        parent::__construct();
+        parent::__construct([self::PRIMARY_NAME,self::PRIMARY_TYPE]);
     }
     
     /** setters */
@@ -69,7 +73,7 @@ class User extends Model {
      * Belangrijk is, dat relaties slechts 1x per request uit de database gehaald worden.
      * Dat wordt geregeld door de relatie op te slaan in een property. 
      * Als de property nog niet bestaat, wordt hij gemaakt en uit de database opgehaald.
-     *  
+     *
     */
     
     public function getToken()
@@ -87,6 +91,18 @@ class User extends Model {
         return $this->token;
     }
 
+    public function getFavorites() {
+        if (!isset($this->Favorites)) {
+            $this->favorites = Movie::indexFavoritesByUser($this);
+        }
+        return $this->favorites;
+    }
+    function getRatings() {
+        if (!isset($this->ratings)) {
+            $this->ratings = Movie::indexRatingsByUser($this);
+        }
+        return $this->ratings;
+    }
 
     /** database-acties */
 
@@ -107,6 +123,9 @@ class User extends Model {
         $this->setId($this->pdo->lastInsertId());
     }
 
+    /**
+     * @param $success
+     */
     private function loadByEmail(&$success)
     {
         $query = 
@@ -136,11 +155,11 @@ class User extends Model {
         
         if (!$success)
         {
-            $this->setError('email', 'e-mailadres is niet geregistreerd');
+            $this->setError('form', 'Invalid user ID or password.');
         }
         elseif (!password_verify($this->password, $this->password_hash))
         {
-            $this->setError('password', 'wachtwoord is onjuist');   
+            $this->setError('form', 'Invalid user ID or password.');
         }
                 
         if ($this->isValid())
@@ -150,7 +169,6 @@ class User extends Model {
     }
 
     /** REGISTRATIE */
-    
     public function register()
     {
         $this->validateName();
@@ -162,11 +180,7 @@ class User extends Model {
             $this->setPasswordHash(password_hash($this->password, PASSWORD_DEFAULT));
             
             $this->save();
-            
-            /**
-             * onderstaande code alleen gebruiken 
-             * als je wil dat de user meteen ingelogd is na registratie
-             */ 
+
             $this->getToken()->generate();
         }
     }
@@ -176,7 +190,7 @@ class User extends Model {
     {
         if ($this->name == '')
         {
-            $this->setError('username', 'naam is leeg');
+            $this->setError('username', 'Username can\'t be empty.');
         }    
     }
 
@@ -185,7 +199,7 @@ class User extends Model {
     {
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL))
         {
-            $this->setError('email', 'e-mailadres is ongeldig');
+            $this->setError('form', 'Invalid user ID or password.');
         }
         else
         {
@@ -194,7 +208,7 @@ class User extends Model {
             $user->loadByEmail($success);
             if ($success)
             {
-                $this->setError('email', 'e-mailadres is al geregistreerd');
+                $this->setError('form', 'Invalid user ID or password.');
             }
         }
     }
@@ -202,21 +216,126 @@ class User extends Model {
     /** password moet bestaan uit tenminste 6 tekens, waarvan tenminste 1 hoofdletter en tenminste 1 cijfer */
     private function validatePassword()
     {
-        if (strlen($this->password) < 6)
+        if (strlen($this->password) < 6 || !preg_match('/[A-Z]/', $this->password) || !preg_match('/[0-9]/', $this->password) || $this->password != $this->password_repeat)
         {
-            $this->setError('password', 'wachtwoord bevat minder dan 6 tekens');
+            $this->setError('form', 'Invalid user ID or password.');
         }
-        elseif (!preg_match('/[A-Z]/', $this->password))
+    }
+
+    /**
+     * General
+     */
+
+    /**
+     * @param $table_name
+     * @param $movie_id
+     * @return bool
+     */
+    private function checkByMovieId($table_name,$movie_id)
+    {
+        $query =
+            '
+            SELECT *
+            FROM ' . $table_name . '
+            WHERE id_movie = :id_movie
+        ';
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':id_movie', $movie_id, Movie::PRIMARY_TYPE);
+        $statement->execute();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
+        return $data != false;
+    }
+
+    /**
+     * @param $table_name
+     * @param $movie_id
+     * @return bool
+     */
+    private function delByMovieId($table_name,$movie_id)
+    {
+        $succes = false;
+        if ($this->checkByMovieId($table_name,$movie_id))
         {
-            $this->setError('password', 'wachtwoord bevat geen hoofdletter');
+            $query =
+                '
+            DELETE FROM ' . $table_name . '
+            WHERE id_user = :id_user && id_movie = :id_movie
+        ';
+            $statement = $this->pdo->prepare($query);
+            $statement->bindValue(':id_user', $this->id, PDO::PARAM_INT);
+            $statement->bindValue(':id_movie', $movie_id, PDO::PARAM_INT);
+            $succes = $statement->execute();
         }
-        elseif (!preg_match('/[0-9]/', $this->password))
+        return $succes;
+    }
+
+    /**
+     *  FAVORITES
+     */
+
+    /**
+     * @param $movie_id
+     * @return bool
+     */
+    public function addFavorite($movie_id)
+    {
+        $succes = false;
+        if (!$this->checkByMovieId('favorites',$movie_id))
         {
-            $this->setError('password', 'wachtwoord bevat geen cijfer');
+            $query =
+                '
+            INSERT INTO favorites (id_user, id_movie)
+            VALUES (:id_user, :id_movie)
+        ';
+            $statement = $this->pdo->prepare($query);
+            $statement->bindValue(':id_user', $this->id, PDO::PARAM_INT);
+            $statement->bindValue(':id_movie', $movie_id, PDO::PARAM_INT);
+            $succes = $statement->execute();
         }
-        elseif ($this->password != $this->password_repeat)
+        return $succes;
+    }
+
+    public function delFavorite($movie_id)
+    {
+        return $this->delByMovieId('favorites',$movie_id);
+    }
+
+    /**
+     *  Ratings
+     */
+
+    /**
+     * @param $movie_id
+     * @param $rating
+     * @return bool
+     */
+    public function addRating($movie_id,$rating)
+    {
+        if (!$this->checkByMovieId('ratings',$movie_id))
         {
-            $this->setError('password2', 'herhaalde wachtwoord is ongelijk aan eerste wachtwoord');
+            $query =
+                '
+                    INSERT INTO ratings (id_user, id_movie, rating)
+                    VALUES (:id_user, :id_movie, :rating)
+                ';
+        } else {
+            $query =
+                '
+                    UPDATE ratings 
+                    SET rating = :rating
+                    WHERE id_user = :id_user && id_movie = :id_movie 
+                ';
         }
+        $statement = $this->pdo->prepare($query);
+        $statement->bindValue(':id_user', $this->id, self::PRIMARY_TYPE);
+        $statement->bindValue(':id_movie', $movie_id, Movie::PRIMARY_TYPE);
+        $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+
+        return $statement->execute();
+    }
+
+    public function delRating($movie_id)
+    {
+        return $this->delByMovieId('ratings',$movie_id);
     }
 }

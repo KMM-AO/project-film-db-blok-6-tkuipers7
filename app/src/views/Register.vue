@@ -1,6 +1,6 @@
 <template>
   <div class="vh-100 d-flex justify-content-center align-items-center">
-    <form @submit.prevent="submit" class="card p-5" ref="register">
+    <form @submit.prevent="submit" class="card p-5 " ref="register" style="max-width: 25%">
       <h1 class="card-title d-flex justify-content-center">Register</h1>
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
@@ -11,23 +11,26 @@
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="text" class="form-control" :class="{'is-invalid': isValid('email')}" id="email" name="email" placeholder="email">
-        <div v-if="isValid('email')" class="invalid-feedback">
-          {{ errors.email }}
+        <input type="text" class="form-control" :class="{'is-invalid': isValid('form')}" id="email" name="email" placeholder="email">
+        <div v-if="isValid('form')" class="invalid-feedback">
+          {{ errors.form }}
         </div>
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" :class="{'is-invalid': isValid('password')}" id="password" name="password" placeholder="password">
-        <div v-if="isValid('password')" class="invalid-feedback">
-          {{ errors.password }}
+        <label for="password" class="form-label">Password </label>
+        <div v-if="hasrequirements" class="d-flex invalid-feedback">
+          {{ getrequirements }}
+        </div>
+        <input type="password" class="form-control" :class="{'is-invalid': isValid('form')}" id="password" name="password" placeholder="password">
+        <div v-if="isValid('form')" class="invalid-feedback">
+          {{ errors.form }}
         </div>
       </div>
       <div class="mb-3">
         <label for="password2" class="form-label">Re-password</label>
-        <input type="password" class="form-control" :class="{'is-invalid': isValid('password2')}" id="password2" name="password2" placeholder="password">
-        <div v-if="isValid('password2')" class="invalid-feedback">
-          {{ errors.password2 }}
+        <input type="password" class="form-control" :class="{'is-invalid': isValid('form')}" id="password2" name="password2" placeholder="password">
+        <div v-if="isValid('form')" class="invalid-feedback">
+          {{ errors.form }}
         </div>
       </div>
       <router-link to="/login" class="mb-3">Already have an account? Login here</router-link>
@@ -42,8 +45,17 @@
     name: 'Register',
     data() {
       return {
-        errors: null
+        errors: null,
+        requirements: '',
       };
+    },
+    computed: {
+      getrequirements() {
+        return this.requirements
+      },
+      hasrequirements () {
+        return this.requirements.length > 0
+      },
     },
     methods: {
       ...mapActions(["Register"]),
@@ -52,16 +64,19 @@
           console.log(this.$refs.register)
           let res = await this.Register(this.$refs.register);
           if (typeof res !== 'undefined') {
-            this.errors = res
-            console.log(this.errors)
-          } else this.errors = null
+            this.errors = res.errors
+            if (this.requirements.length === 0){
+              this.requirements = res.password_requirements
+            }
+          } else {
+            this.errors = null
+          }
         } catch (error) {
           console.log(error)
         }
       },
       isValid(key) {
         if (this.errors !== null) {
-          console.log(this.errors[key])
           return typeof this.errors[key] !== 'undefined'
         }
       },

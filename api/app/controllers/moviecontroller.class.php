@@ -15,6 +15,10 @@ class moviecontroller extends Controller
         if ($success)
         {
             $data = $movie->getData();
+
+            $data['id'] = $data[Movie::PRIMARY_NAME];
+            unset($data[Movie::PRIMARY_NAME]);
+
             $data['genres'] = [];
             foreach ($movie->getGenres() as $genre)
             {
@@ -25,6 +29,7 @@ class moviecontroller extends Controller
             {
                 $data['actors'][] = $actor->getData();
             }
+
         }
         $this->json->add('response',[$data]);
         $this->json->render();

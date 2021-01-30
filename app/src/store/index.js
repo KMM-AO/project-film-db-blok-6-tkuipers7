@@ -6,7 +6,7 @@ import user from './modules/user'
 import data from './modules/data'
 
 const cookies = createPersistedState({
-      paths: ["user.user"],
+      paths: ["user"],
       storage: {
         getItem: key => Cookies.get(key),
         setItem: (key, value) => Cookies.set(key, value, { expires: 1, secure: false }),

@@ -24,7 +24,7 @@
           <span class="account-name d-flex align-items-center mr-5">
             {{ getUser.username }}
           </span>
-          <img class="account-img" :src="require('@/assets/account_icon.jpg')" alt="" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="account-img far fa-user-circle" data-bs-toggle="dropdown" aria-expanded="false"></i>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><router-link to="/favorites" class="dropdown-item text-white">My favorite movies</router-link></li>
             <li><router-link to="/rated" class="dropdown-item text-white">My rated movies</router-link></li>
@@ -90,7 +90,7 @@ export default {
   }
 
   .account-img {
-    width: 3.5%;
+    font-size: 35px;
     cursor: pointer;
   }
   .account-name {

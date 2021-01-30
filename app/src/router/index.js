@@ -58,6 +58,14 @@ const routes = [
     }
   },
   {
+    path: '/rated',
+    name: 'Rated',
+    component: () => import('@/views/Rated'),
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: '404',
   }
