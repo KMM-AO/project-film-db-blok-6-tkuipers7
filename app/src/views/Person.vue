@@ -1,10 +1,10 @@
 <template>
-  <div class="container d-flex justify-content-center align-items-center vh-100 " v-if="hasdata">
+  <div class="container py-5" v-if="hasdata">
     <div class="card mb-3">
       <div class="row g-0">
         <div class="col-md-4">
           <img :src="getposter" v-if="getposter.length > 0" alt="" >
-          <div v-if="getposter.length === 0" class="d-flex justify-content-center h-100 align-items-center">no image found</div>
+          <div v-if="getposter.length === 0" class="d-flex justify-content-center h-100 align-items-center" style="min-height: 400px">no image found</div>
         </div>
         <div class="col-md-8 d-flex flex-column py-3">
           <div class="card-body">
@@ -34,7 +34,6 @@ export default {
   computed: {
     ...mapGetters(['getdata','hasdata']),
     person(){
-      console.log(this.getdata[0])
       return this.getdata[0]
     },
     getposter() {
@@ -44,16 +43,12 @@ export default {
       let biography = this.person.biography;
       if (biography.length > 120){
        biography = biography.slice(0,400) + '...'
-
       }
       return biography
     }
   },
   methods: {
     ...mapActions(['getPerson']),
-    toPerson(id){
-      this.$router.push(`person/${id}`)
-    },
   },
   async created() {
     await this.getPerson(this.$route.params.key)

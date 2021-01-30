@@ -16,9 +16,6 @@ const routes = [
     path: '/movie/:key',
     name: 'Movie',
     component: () => import('@/views/Movie'),
-    meta: {
-      absolute: true
-    }
   },
   {
     path: '/persons',

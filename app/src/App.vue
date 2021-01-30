@@ -24,4 +24,7 @@ import Nav from '@/components/Nav'
 .pointer {
   cursor: pointer;
 }
+i.disabled {
+  color: rgba(191, 191, 191, .5) !important;
+}
 </style>

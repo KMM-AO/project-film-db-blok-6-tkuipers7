@@ -53,7 +53,7 @@ class moviecontroller extends Controller
 
     public function index_json_limit($limit)
     {
-        $movies = Movie::index('tmdb_id as id, title,original_title, poster_path',$limit);
+        $movies = Movie::index('tmdb_id as id, title, original_title, poster_path',$limit);
 
         $data = [];
         if (count($movies) > 0)
