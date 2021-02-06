@@ -20,31 +20,42 @@ const getters = {
 
 const actions = {
     async Register({commit}, form) {
-        let res = await axios.post('user/register', new FormData(form))
-        if (res.data.success) {
-            await commit('setuser', {username: res.data.user_name, token: res.data.token})
-            await router.push('/')
-        } else {
-            return res.data
+        try {
+            let res = await axios.post('user/register', new FormData(form))
+            if (res.data.success) {
+                await commit('setuser', {user: {username: res.data.user_name, token: res.data.token}, favorites: [], rated: []})
+                await router.push('/')
+            } else {
+                return res.data
+            }
+        } catch (e) {
+            console.log(e)
         }
+
     },
     async LogIn({commit}, form) {
-        let res = await axios.post('user/login', new FormData(form))
-        if (res.data.success) {
-            await commit('setuser', {username: res.data.user_name, token: res.data.token})
-            await commit('setFavorites',res.data.favorites)
-            await commit('setRated',res.data.rated)
-            await router.push('/')
-        } else {
-            return res.data.errors
+        try {
+            let res = await axios.post('user/login', new FormData(form))
+            if (res.data.success) {
+                await commit('setuser', {user: {username: res.data.user_name, token: res.data.token}, favorites: res.data.favorites, rated: res.data.rated})
+                await router.push('/')
+            } else {
+                return res.data.errors
+            }
+        } catch (e) {
+            console.log('error: ',e)
         }
     },
     async LogOut({state,commit}){
         let userdata = new FormData()
         userdata.append('token', state.user.token)
-        await axios.post('user/logout', userdata)
-        commit('logout')
-        await router.push('/')
+        try {
+            await axios.post('user/logout', userdata)
+            commit('logout')
+            await router.push('/')
+        } catch (e) {
+            console.log(e)
+        }
     },
     async addFavorite({commit,getters}, movie) {
         let formdata = new FormData()
@@ -106,7 +117,9 @@ const actions = {
 
 const mutations = {
     setuser(state, user) {
-        state.user = user
+        state.user = user.user
+        state.favorites = user.favorites
+        state.rated = user.rated
     },
     logout(state) {
         state.user = null
@@ -115,17 +128,12 @@ const mutations = {
     },
     addfavorite(state, movie) {
         state.favorites.push(movie)
-
     },
     delfavorite(state, movie) {
         state.favorites = state.favorites.filter(obj => {
             return obj.id !== movie.id
         })
     },
-    setFavorites(state, favorites) {
-        state.favorites = favorites
-    },
-
     addrated(state, movie) {
         let key
         let res = state.rated.find((obj,current_key) => {
@@ -141,9 +149,6 @@ const mutations = {
     delrated(state, movie) {
         state.rated = state.rated.filter(obj => obj.id !== movie.id)
     },
-    setRated(state, rated) {
-        state.rated = rated
-    }
 };
 
 export default {

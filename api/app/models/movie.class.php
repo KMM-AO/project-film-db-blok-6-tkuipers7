@@ -219,6 +219,4 @@ class movie extends model
         }
         return $this->actors;
     }
-
-
 }

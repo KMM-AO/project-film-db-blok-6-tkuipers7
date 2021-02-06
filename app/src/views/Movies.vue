@@ -15,32 +15,20 @@
       <p style="font-size: 20px;" class="mb-0">Tip: click on a movie to get more information about the movie</p>
       <!--  filter & search -->
       <div class="d-flex container justify-content-end align-items-center py-4">
-        <!-- filter -->
-<!--        <div class="d-flex">-->
-<!--          <p style="font-size: 33px" class="m-0 mr-4">Sort on:</p>-->
-<!--          <div class="form-check form-check-inline">-->
-<!--            <input style="margin-top: 4.8px" class="form-check-input" type="checkbox" id="inlineCheckbox1" value="MostPopular">-->
-<!--            <label class="form-check-label" for="inlineCheckbox1">Most Popular</label>-->
-<!--          </div>-->
-<!--          <div class="form-check form-check-inline">-->
-<!--            <input style="margin-top: 4.8px" class="form-check-input" type="checkbox" id="inlineCheckbox2" value="MostPopular">-->
-<!--            <label class="form-check-label" for="inlineCheckbox2">2</label>-->
-<!--          </div> -->
-<!--        </div>-->
         <!-- search -->
         <searchbar />
       </div>
       <!--  Movies  -->
-      <div v-if="hasdata" class="container d-flex flex-wrap justify-content-lg-around">
+      <div v-if="hasdata" class="container d-flex flex-wrap justify-content-around">
         <MovieCard v-for="(movie, key) in getdata"
                    :key="key"
                    :movie="movie"
         />
       </div>
-      <viewmore />
-      <div v-if="!hasdata">
+      <div v-else>
         <h1>No movies has been found</h1>
       </div>
+      <viewmore />
     </div>
   </div>
 </template>
